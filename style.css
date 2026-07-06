@@ -266,7 +266,7 @@ section{
     line-height: 1.9;
 }
 
-/* Geo-tag labels (lat/long) near the photo */
+/* Geo-tag labels (lat/long) — now anchored to the About section's Earth icon */
 .geo-tag {
     position: absolute;
     font-size: 1.2rem;
@@ -276,17 +276,17 @@ section{
     padding: 0.3rem 0.8rem;
     border-radius: 2rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    z-index: 2;
+    z-index: 3;
 }
 
 .geo-tag-1 {
-    top: 10%;
-    left: -5%;
+    top: -2%;
+    left: -16%;
 }
 
 .geo-tag-2 {
-    bottom: 10%;
-    right: -5%;
+    bottom: -2%;
+    right: -16%;
 }
 
 .social-media a {
@@ -378,6 +378,17 @@ section{
     margin: 2.2rem 0 3rem;
 }
 
+.about-content .eyebrow {
+    font-size: 1.5rem;
+    color: var(--text-color);
+    margin: -1.5rem 0 2.5rem;
+}
+
+.about-content .eyebrow i {
+    color: var(--main-color);
+    margin-right: 0.4rem;
+}
+
 /* Earth + orbiting satellite visual for About section */
 .about-visual {
     position: relative;
@@ -393,6 +404,7 @@ section{
     flex-shrink: 0;
     margin-left: auto;
     margin-right: 2rem;
+    transform: translateY(-8rem);
 }
 
 .earth-icon {
@@ -455,6 +467,7 @@ section{
         margin-top: 2rem;
         margin-left: auto;
         margin-right: auto;
+        transform: translateY(0);
     }
 
     .earth-icon {
@@ -465,6 +478,14 @@ section{
         width: 2.8rem;
         height: 2.8rem;
         font-size: 1.3rem;
+    }
+
+    .geo-tag-1 {
+        left: -8%;
+    }
+
+    .geo-tag-2 {
+        right: -8%;
     }
 }
 
@@ -1124,6 +1145,11 @@ section{
 
     .about-content {
         padding: 0 2rem;
+    }
+
+    .about-content .eyebrow {
+        justify-content: center;
+        display: block;
     }
 
     /* Education / Experience Timeline */
