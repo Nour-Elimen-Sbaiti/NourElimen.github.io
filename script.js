@@ -42,24 +42,56 @@ if (themeToggle) {
     });
 }
 
-// Contact form result banner (contact.php redirects back with ?contact=success/error/invalid)
-const params = new URLSearchParams(window.location.search);
-const contactStatus = params.get('contact');
+// Contact form — submits directly to Formspree (works on static hosts like GitHub Pages, no PHP needed)
+const contactForm = document.querySelector('#contact-form');
 const banner = document.querySelector('#form-banner');
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mdarjejl';
 
-if (banner && contactStatus) {
-    const messages = {
-        success: 'Thanks! Your message has been sent — I\'ll get back to you soon.',
-        error: 'Something went wrong sending your message. Please try again or email me directly.',
-        invalid: 'Please fill in all required fields with a valid email address.'
-    };
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    const type = contactStatus === 'success' ? 'success' : 'error';
-    banner.textContent = messages[contactStatus] || messages.error;
-    banner.classList.add('show', type);
+        // Honeypot check — if this hidden field got filled in, it's almost certainly a bot.
+        // Formspree also checks _gotcha server-side, but bailing out early here saves a request.
+        const honeypot = contactForm.querySelector('input[name="_gotcha"]');
+        if (honeypot && honeypot.value) {
+            return;
+        }
 
-    // Clean the URL so refreshing doesn't re-show the banner
-    window.history.replaceState({}, document.title, window.location.pathname + '#contact');
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+
+        try {
+            const response = await fetch(FORMSPREE_ENDPOINT, {
+                method: 'POST',
+                body: new FormData(contactForm),
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (response.ok) {
+                banner.textContent = "Thanks! Your message has been sent — I'll get back to you soon.";
+                banner.classList.remove('error');
+                banner.classList.add('show', 'success');
+                contactForm.reset();
+            } else {
+                const data = await response.json().catch(() => null);
+                const errMsg = data?.errors?.[0]?.message;
+                banner.textContent = errMsg
+                    ? `Couldn't send your message: ${errMsg}`
+                    : "Something went wrong sending your message. Please try again or email me directly.";
+                banner.classList.remove('success');
+                banner.classList.add('show', 'error');
+            }
+        } catch (err) {
+            banner.textContent = "Couldn't reach the server. Check your connection and try again.";
+            banner.classList.remove('success');
+            banner.classList.add('show', 'error');
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Message';
+    });
 }
 
 // Dynamic year in footer
